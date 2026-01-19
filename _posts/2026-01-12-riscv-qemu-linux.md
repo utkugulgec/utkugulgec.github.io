@@ -1,4 +1,5 @@
 ---
+layout: single
 title: "Booting Linux on RISC-V using QEMU"
 categories: [riscv, qemu, linux]
 tags: [emulation, kernel]
