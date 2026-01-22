@@ -7,6 +7,8 @@ url: "https://utkugulgec.github.io"
 baseurl: ""
 
 remote_theme: "mmistakes/minimal-mistakes"
+minimal_mistakes_skin: default
+enable_darkmode: true
 
 plugins:
   - jekyll-include-cache
