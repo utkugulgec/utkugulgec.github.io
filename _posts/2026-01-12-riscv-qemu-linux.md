@@ -63,3 +63,9 @@ make -j$(nproc)
 ```
 
 After this you should see the kernel Image in directory: "linux/arch/riscv/boot/"
+Make sure to you can see "RISC-V 64-bit" in the returning string of the following command:
+```bash
+file arch/riscv/boot/Image
+```
+For me it is: 
+_MS-DOS executable PE32+ executable (EFI application) RISC-V 64-bit (stripped to external PDB), for MS Windows_
