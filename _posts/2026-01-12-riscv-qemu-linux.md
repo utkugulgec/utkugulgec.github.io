@@ -51,8 +51,15 @@ export ARCH=riscv
 export CROSS_COMPILE=riscv64-linux-gnu-
 ```
 
-Next we run make mrproper to return the kernel source tree to its unconfigured state. 
+Next we run make mrproper to return the kernel source tree to its unconfigured state and set the default configuration. 
 ```bash
 make mrproper
+make defconfig
 ```
 
+Build the kernel:
+```bash
+make -j$(nproc)
+```
+
+After this you should see the kernel Image in directory: "linux/arch/riscv/boot/"
