@@ -12,14 +12,47 @@ In this project, I’m looking at instruction set extensions and whether they ma
 
 The idea is not to build a full hardware accelerator, but to learn as much as stuff by doing.
 
-This post documents the setup work — getting Linux to boot on a modified RISC-V target — which is the foundation for experimenting with NTT-focused instruction extensions later on.
+This post documents the setup work — getting Linux to boot on a modified RISC-V target — which is the foundation for experimenting with NTT-focused instruction extensions later on. We will emulate 64-bit RISC-V.
 
-First, install the distro-provided QEMU
+First, install the distro-provided QEMU:
 ```bash
 sudo apt install -y qemu-system-misc qemu-utils
 ```
-Verify QEMU
+Verify QEMU:
 
 ```bash
 qemu-system-riscv64 --version
 ```
+
+Install RISC-V Linux Cross Toolchain:
+``` bash
+sudo apt install -y \
+  gcc-riscv64-linux-gnu \
+  g++-riscv64-linux-gnu \
+  binutils-riscv64-linux-gnu
+```
+
+Verify the toolchain:
+```bash
+riscv64-linux-gnu-gcc --version
+riscv64-linux-gnu-objdump --version
+```
+
+At this point it is a good idea to create a clean workspace. Mine is named **riscv-qemu**. Inside this workspace, we will download the Linux kernel.
+Clone the kernel (it can take some time):
+```bash
+git clone https://github.com/torvalds/linux.git
+cd linux
+```
+
+After download is completed, make sure to set following parameters for the build environment:
+```bash
+export ARCH=riscv
+export CROSS_COMPILE=riscv64-linux-gnu-
+```
+
+Next we run make mrproper to return the kernel source tree to its unconfigured state. 
+```bash
+make mrproper
+```
+
