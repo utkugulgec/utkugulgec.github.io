@@ -7,20 +7,26 @@ url: "https://utkugulgec.github.io"
 baseurl: ""
 
 remote_theme: "mmistakes/minimal-mistakes"
+
 minimal_mistakes_skin: default
 enable_darkmode: true
 enable_copy_code_button: true
+
+plugins:
+  - jekyll-include-cache
+
+include:
+  - _pages
 
 defaults:
   - scope:
       path: ""
     values:
       author_profile: true
-      author:
-  name: "Utku Gülgeç"
-  avatar: "/assets/images/avatar.jpg"   # optional
-  bio: "Software engineer · Engineering notebook · Learning by building"
 
+author:
+  name: "Utku Gülgeç"
+  bio: "Software engineer · Engineering notebook · Learning by building"
   location: "Türkiye"
 
   links:
@@ -35,9 +41,3 @@ defaults:
     - label: "CV"
       icon: "fas fa-file-pdf"
       url: "/assets/cv/Utku_Gulgec_CV.pdf"
-
-plugins:
-  - jekyll-include-cache
-
-include:
-  - _pages
