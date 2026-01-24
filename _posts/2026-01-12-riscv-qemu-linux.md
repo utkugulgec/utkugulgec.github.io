@@ -110,11 +110,54 @@ If everything done correctly, you should see something like:
 busybox: ELF 64-bit LSB executable, UCB RISC-V, version 1 (SYSV), statically linked,
 ```
 
+Now we create RootFS.
+```bash
+mkdir -p rootfs
+cd rootfs
+```
+
+Copy BusyBox install:
+```bash
+cp -a ../busybox/_install/* .
+```
+
+Create required directories:
+```bash
+mkdir -p proc sys dev tmp
+```
+
+Create init script, by creating a init file:
+```bash
+nano init
+```
+
+Paste below inside init:
+```bash
+#!/bin/sh
+mount -t proc none /proc
+mount -t sysfs none /sys
+mount -t devtmpfs none /dev
+exec /bin/sh
+```
+
+Make it executable:
+```bash
+chmod +x init
+```
+
+Build initramf: 
+```bash
+find . | cpio -o -H newc | gzip > ../rootfs.cpio.gz
+```
+initramfs provides a minimal userspace environment that the Linux kernel uses during early boot before the real root filesystem is available.
+
+
+
 Up to this point we have:
 - Installed QEMU
 - Installed RISC-V toolchain
 - Installed Linux kernel and built the kernel image
 - Installed and built BusyBox
-
+- Created Root file system.
 
 
