@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Booting Linux on RISC-V using QEMU"
+title: "RISC-V Instruction Extensions on QEMU — Part 1: Booting Linux"
 categories: [riscv, qemu, linux]
 tags: [emulation, kernel]
 toc: true
@@ -8,12 +8,13 @@ toc: true
 
 One of the nicest things about RISC-V is that it’s meant to be extended. You’re not locked into a fixed instruction set — you can add your own instructions if you have a workload that doesn’t map well to generic CPU operations. That makes RISC-V a great playground for experimenting with ideas that sit somewhere between software and hardware.
 
-In this project, I’m looking at instruction set extensions and whether they make sense for accelerating parts of the *Number Theoretic Transform (NTT)*, which is basically FTT generalized over finite integer fields. NTT shows up a lot in cryptography and polynomial math. For now, I am planning to keep things in QEMU (which is the first time I am using it) and maybe later on I will move on to the actual hardware, FPGA.
+In this project, I’m looking at instruction set extensions and whether they make sense for accelerating parts of the *Number Theoretic Transform (NTT)*, which is basically FFT generalized over finite integer fields. NTT shows up a lot in cryptography and polynomial math. For now, I am planning to keep things in QEMU (which is the first time I am using it) and maybe later move on to the actual hardware (FPGA).
 
-The idea is not to build a full hardware accelerator, but to learn as much as stuff by doing.
+The idea is not to build a full hardware accelerator, but to learn as much as possible by doing.
 
 This post documents the setup work — getting Linux to boot on a modified RISC-V target — which is the foundation for experimenting with NTT-focused instruction extensions later on. We will emulate 64-bit RISC-V.
 
+## Installing QEMU
 First, install the distro-provided QEMU:
 ```bash
 sudo apt install -y qemu-system-misc qemu-utils
@@ -39,6 +40,8 @@ riscv64-linux-gnu-objdump --version
 ```
 
 At this point it is a good idea to create a clean workspace. Mine is named **riscv-qemu**. Inside this workspace, we will download the Linux kernel.
+
+## Building the RISC-V Linux Kernel
 Clone the kernel (it can take some time):
 ```bash
 git clone https://github.com/torvalds/linux.git
@@ -72,7 +75,8 @@ For me it is:
 MS-DOS executable PE32+ executable (EFI application) RISC-V 64-bit (stripped to external PDB), for MS Windows
 ```
 
-Now, we need to BusyBox. BusyBox will provide us with shell commands in Linux we will boot QEMU.
+## Building BusyBox
+Now, we need BusyBox. BusyBox will provide us with shell commands in Linux we will boot QEMU.
 ```bash
 git clone https://github.com/mirror/busybox.git
 ```
@@ -110,6 +114,7 @@ If everything done correctly, you should see something like:
 busybox: ELF 64-bit LSB executable, UCB RISC-V, version 1 (SYSV), statically linked,
 ```
 
+## Creating the Root Filesystem
 Now we create RootFS.
 ```bash
 mkdir -p rootfs
@@ -145,11 +150,11 @@ Make it executable:
 chmod +x init
 ```
 
+initramfs provides a minimal userspace environment that the Linux kernel uses during early boot before the real root filesystem is available.
 Create initramfs archive: 
 ```bash
 find . | cpio -o -H newc | gzip > ../rootfs.cpio.gz
 ```
-initramfs provides a minimal userspace environment that the Linux kernel uses during early boot before the real root filesystem is available.
 
 Up to this point we have:
 - Installed QEMU
@@ -165,7 +170,8 @@ riscv-project
 ├── linux
 └── rootfs
 
-Now, all we have to do is start QEMU in right configuration. In your project directory, run bellow command:
+## Booting Linux with QEMU
+Now, all we have to do is start QEMU in right configuration. In your project directory, run below command:
 ```bash
 qemu-system-riscv64 \
 -machine virt \
@@ -173,9 +179,10 @@ qemu-system-riscv64 \
 -bios default \
 -kernel linux/arch/riscv/boot/Image \
 -initrd rootfs.cpio.gz \
--append "console=ttyS
+-append "console=ttyS"
 ```
-If during kernel boot, QEMU stucks, you may have to change the bios configuration. This happened to me while I am verifying the steps so far in VirtualBox. We need to install OpenSBI. On some systems, QEMU bundles OpenSBI internally. A good info about what OpenSBI is can be found [here](https://www.thegoodpenguin.co.uk/blog/an-overview-of-opensbi/). 
+If during kernel boot, QEMU hangs, you may have to change the bios configuration. This happened to me while I am verifying the steps so far in VirtualBox. We need to install OpenSBI. On some systems, QEMU bundles OpenSBI internally, while on others it must be provided explicitly via `-bios`.
+A good info about what OpenSBI is can be found [here](https://www.thegoodpenguin.co.uk/blog/an-overview-of-opensbi/). 
 
 ```bash
 sudo apt install -y opensbi
@@ -199,10 +206,10 @@ qemu-system-riscv64 \
 -bios /usr/lib/riscv64-linux-gnu/opensbi/generic/fw_jump.elf \
 -kernel linux/arch/riscv/boot/Image \
 -initrd rootfs.cpio.gz \
--append "console=ttyS
+-append "console=ttyS"
 ```
 
-If everthing is OK, you should see the Linux booting in terminal.
+If everything is OK, you should see the Linux booting in terminal.
 
 ![QEMU booting Linux](/assets/images/riscv-qemu/riscvqemu1.png)
 
