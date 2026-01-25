@@ -204,7 +204,7 @@ qemu-system-riscv64 \
 
 If everthing is OK, you should see the Linux booting in terminal.
 
+![QEMU booting Linux](/assets/images/riscv-qemu/riscvqemu1.png)
 
-
-
+![QEMU booting Linux](/assets/images/riscv-qemu/riscvqemu2.png)
 
