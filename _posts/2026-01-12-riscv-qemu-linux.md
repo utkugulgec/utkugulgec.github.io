@@ -145,19 +145,66 @@ Make it executable:
 chmod +x init
 ```
 
-Build initramf: 
+Create initramfs archive: 
 ```bash
 find . | cpio -o -H newc | gzip > ../rootfs.cpio.gz
 ```
 initramfs provides a minimal userspace environment that the Linux kernel uses during early boot before the real root filesystem is available.
-
-
 
 Up to this point we have:
 - Installed QEMU
 - Installed RISC-V toolchain
 - Installed Linux kernel and built the kernel image
 - Installed and built BusyBox
-- Created Root file system.
+- Created root file system.
+
+Your basic file structure should look like this:
+
+riscv-project
+├── busybox
+├── linux
+└── rootfs
+
+Now, all we have to do is start QEMU in right configuration. In your project directory, run bellow command:
+```bash
+qemu-system-riscv64 \
+-machine virt \
+-nographic \
+-bios default \
+-kernel linux/arch/riscv/boot/Image \
+-initrd rootfs.cpio.gz \
+-append "console=ttyS
+```
+If during kernel boot, QEMU stucks, you may have to change the bios configuration. This happened to me while I am verifying the steps so far in VirtualBox. We need to install OpenSBI. On some systems, QEMU bundles OpenSBI internally. A good info about what OpenSBI is can be found [here](https://www.thegoodpenguin.co.uk/blog/an-overview-of-opensbi/). 
+
+```bash
+sudo apt install -y opensbi
+```
+
+Now, verify install:
+```bash
+dpkg -L opensbi | grep fw
+```
+
+You should see something like these:
+```
+/usr/lib/riscv64-linux-gnu/opensbi/generic/fw_jump.elf
+```
+
+Now, you should use the path to **fw_jump.elf** on QEMU start command. Edit the -bios configurations as:
+```bash
+qemu-system-riscv64 \
+-machine virt \
+-nographic \
+-bios /usr/lib/riscv64-linux-gnu/opensbi/generic/fw_jump.elf \
+-kernel linux/arch/riscv/boot/Image \
+-initrd rootfs.cpio.gz \
+-append "console=ttyS
+```
+
+If everthing is OK, you should see the Linux booting in terminal.
+
+
+
 
 
