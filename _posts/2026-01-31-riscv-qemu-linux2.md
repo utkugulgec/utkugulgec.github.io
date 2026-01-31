@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "RISC-V Instruction Extensions on QEMU — Part 2: Running C++ Programs"
+title: "RISC-V Instruction Extensions on QEMU — Part 2: Running Programs"
 categories: [riscv, qemu, linux]
 tags: [emulation, kernel]
 toc: true
