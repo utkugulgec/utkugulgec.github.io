@@ -1,10 +1,10 @@
 ---
+layout: single
 title: "RISC-V Instruction Extensions on QEMU — Part 3: Adding a Custom Instruction"
 date: 2026-03-03
-categories:
-  - riscv
-  - qemu
-  - linux
+categories: [riscv, qemu, linux]
+tags: [emulation, kernel]
+toc: true
 ---
 
 In the previous [post](https://utkugulgec.github.io/riscv/qemu/linux/2026/01/31/riscv-qemu-linux2.html) we cross-compiled a program, baked it into the initramfs, and ran it on our emulated RISC-V machine. Now comes the interesting part — actually extending the instruction set.
